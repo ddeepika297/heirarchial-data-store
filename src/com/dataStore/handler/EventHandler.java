@@ -1,14 +1,16 @@
-package com.dataStore.model;
+package com.dataStore.handler;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import com.dataStore.service.Event;
+import com.dataStore.client.Event;
+import com.dataStore.model.Node;
 
 public class EventHandler implements Event
 {
-	protected ArrayList<Node> createEventListners = new ArrayList<Node>();
-	protected ArrayList<Node> updateEventListners = new ArrayList<Node>();
-	protected ArrayList<Node> deleteEventListners = new ArrayList<Node>();
+	protected final List<Node> createEventListners = new ArrayList<Node>();
+	protected final List<Node> updateEventListners = new ArrayList<Node>();
+	protected final List<Node> deleteEventListners = new ArrayList<Node>();
 	private final Object MUTEX = new Object();
 
 	@Override
@@ -16,13 +18,13 @@ public class EventHandler implements Event
 	{
 		if (event == EventType.CREATE)
 		{
-			System.out.println(" \tListner : Add child");
+			System.out.println(" \tListner : Add child event");
 		} else if (event == EventType.UPDATE)
 		{
-			System.out.println("\t Listner : Update child");
+			System.out.println("\t Listner : Update child event ");
 		} else if (event == EventType.DELETE)
 		{
-			System.out.println(" \tListner : Delete child");
+			System.out.println(" \tListner : Delete child event");
 		}
 	}
 

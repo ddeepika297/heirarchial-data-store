@@ -1,4 +1,4 @@
-package com.dataStore.service;
+package com.dataStore.client;
 
 import com.dataStore.model.Node;
 

@@ -2,10 +2,9 @@ package com.dataStore.test;
 
 import java.util.ArrayList;
 
+import com.dataStore.client.Event.EventType;
 import com.dataStore.model.Node;
-import com.dataStore.model.Store;
-import com.dataStore.service.Event.EventType;
-
+import com.dataStore.model.Store;;
 public class Test
 {
 

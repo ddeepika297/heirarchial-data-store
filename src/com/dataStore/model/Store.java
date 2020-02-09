@@ -1,9 +1,9 @@
 package com.dataStore.model;
 
 import java.util.ArrayList;
-
+import com.dataStore.client.DataStoreService;
 import com.dataStore.exception.IllegalPathException;
-import com.dataStore.service.DataStoreService;
+import com.dataStore.handler.EventHandler;
 
 public class Store extends EventHandler implements DataStoreService
 {
@@ -21,20 +21,12 @@ public class Store extends EventHandler implements DataStoreService
 		this.basePath = basePath;
 	}
 
-	public void createNode(String path, String data) throws IllegalPathException
+	// @NotNull(message = "Name may not be null")
+	public boolean createNode(String path, String data) throws IllegalPathException
 	{
-		path = path.trim();
-		if (!path.startsWith(basePath))
-		{
-			throw new IllegalPathException();
-		}
-		path = path.substring(1);
-		String[] heirarchy = path.split("/");
+
+		String[] heirarchy = getArrayOfPath(path);
 		int pathLen = heirarchy.length;
-		if (pathLen == 0)
-		{
-			throw new IllegalPathException();
-		}
 
 		synchronized (this)
 		{
@@ -47,22 +39,13 @@ public class Store extends EventHandler implements DataStoreService
 			if (path.startsWith(node.getPath()))
 				listen(EventType.CREATE);
 		}
+		return true;
 	}
 
-	public void updateNode(String path, String value) throws IllegalPathException
+	public boolean updateNode(String path, String value) throws IllegalPathException
 	{
-		path = path.trim();
-		if (!path.startsWith(basePath))
-		{
-			throw new IllegalPathException();
-		}
-		path = path.substring(1);
-		String[] heirarchy = path.split("/");
+		String[] heirarchy = getArrayOfPath(path);
 		int pathLen = heirarchy.length;
-		if (pathLen == 0)
-		{
-			throw new IllegalPathException();
-		}
 		synchronized (this)
 		{
 			Node node = getLastNodeInPath(heirarchy, pathLen);
@@ -73,22 +56,13 @@ public class Store extends EventHandler implements DataStoreService
 			if (path.startsWith(node.getPath()))
 				listen(EventType.UPDATE);
 		}
+		return true;
 	}
 
-	public void deleteNode(String path) throws IllegalPathException
+	public boolean deleteNode(String path) throws IllegalPathException
 	{
-		path = path.trim();
-		if (!path.startsWith(basePath))
-		{
-			throw new IllegalPathException();
-		}
-		path = path.substring(1);
-		String[] heirarchy = path.split("/");
+		String[] heirarchy = getArrayOfPath(path);
 		int pathLen = heirarchy.length;
-		if (pathLen == 0)
-		{
-			throw new IllegalPathException();
-		}
 
 		synchronized (this)
 		{
@@ -108,7 +82,7 @@ public class Store extends EventHandler implements DataStoreService
 				node.setChildren(children);
 			else
 			{
-				throw new IllegalPathException();
+				return false;
 			}
 		}
 		for (Node node : deleteEventListners)
@@ -116,23 +90,14 @@ public class Store extends EventHandler implements DataStoreService
 			if (path.startsWith(node.getPath()))
 				listen(EventType.DELETE);
 		}
+		return true;
 
 	}
 
 	public String getNodeData(String path) throws IllegalPathException
 	{
-		path = path.trim();
-		if (!path.startsWith(basePath))
-		{
-			throw new IllegalPathException();
-		}
-		path = path.substring(1);
-		String[] heirarchy = path.split("/");
+		String[] heirarchy = getArrayOfPath(path);
 		int pathLen = heirarchy.length;
-		if (pathLen == 0)
-		{
-			throw new IllegalPathException();
-		}
 		synchronized (this)
 		{
 			Node node = getLastNodeInPath(heirarchy, pathLen);
@@ -142,6 +107,20 @@ public class Store extends EventHandler implements DataStoreService
 
 	public ArrayList<Node> listChildren(String path) throws IllegalPathException
 	{
+		String[] heirarchy = getArrayOfPath(path);
+		int pathLen = heirarchy.length;
+		synchronized (this)
+		{
+			Node node = getLastNodeInPath(heirarchy, pathLen);
+			return node.getChildren();
+		}
+
+	}
+
+	private String[] getArrayOfPath(String path) throws IllegalPathException
+	{
+		if (path == null)
+			throw new IllegalPathException();
 		path = path.trim();
 		if (!path.startsWith(basePath))
 		{
@@ -154,12 +133,7 @@ public class Store extends EventHandler implements DataStoreService
 		{
 			throw new IllegalPathException();
 		}
-		synchronized (this)
-		{
-			Node node = getLastNodeInPath(heirarchy, pathLen);
-			return node.getChildren();
-		}
-
+		return heirarchy;
 	}
 
 	private Node getLastNodeInPath(String[] heirarchy, int pathLen) throws IllegalPathException

@@ -1,4 +1,4 @@
-package com.dataStore.service;
+package com.dataStore.client;
 
 import java.util.ArrayList;
 
@@ -8,11 +8,11 @@ import com.dataStore.model.Node;
 public interface DataStoreService
 {
 
-	public void createNode(String path, String data) throws IllegalPathException;
+	public boolean createNode(String path, String data) throws IllegalPathException;
 
-	public void updateNode(String path, String data) throws IllegalPathException;
+	public boolean updateNode(String path, String data) throws IllegalPathException;
 
-	public void deleteNode(String path) throws IllegalPathException;
+	public boolean deleteNode(String path) throws IllegalPathException;
 
 	public ArrayList<Node> listChildren(String path) throws IllegalPathException;
 
