@@ -29,7 +29,7 @@ public class EventHandler implements Event
 	}
 
 	@Override
-	public void register(Node observer, EventType event)
+	public boolean register(Node observer, EventType event)
 	{
 		if (observer == null)
 			throw new NullPointerException();
@@ -38,44 +38,46 @@ public class EventHandler implements Event
 			synchronized (MUTEX)
 			{
 				if (!createEventListners.contains(observer))
-					createEventListners.add(observer);
+					return createEventListners.add(observer);
 			}
-		}
-		if (event == EventType.UPDATE)
+
+		} else if (event == EventType.UPDATE)
 		{
 			synchronized (MUTEX)
 			{
 				if (!updateEventListners.contains(observer))
-					updateEventListners.add(observer);
+					return updateEventListners.add(observer);
 			}
-		}
-		if (event == EventType.DELETE)
+		} else if (event == EventType.DELETE)
 		{
 			synchronized (MUTEX)
 			{
 				if (!deleteEventListners.contains(observer))
-					deleteEventListners.add(observer);
+					return deleteEventListners.add(observer);
 			}
+
 		}
+		return false;
 	}
 
 	@Override
-	public void unRegister(Node observer, EventType event)
+	public boolean unRegister(Node observer, EventType event)
 	{
 		if (event == EventType.CREATE)
 			synchronized (MUTEX)
 			{
-				createEventListners.remove(observer);
+				return createEventListners.remove(observer);
 			}
 		if (event == EventType.UPDATE)
 			synchronized (MUTEX)
 			{
-				updateEventListners.remove(observer);
+				return updateEventListners.remove(observer);
 			}
 		if (event == EventType.DELETE)
 			synchronized (MUTEX)
 			{
-				deleteEventListners.remove(observer);
+				return deleteEventListners.remove(observer);
 			}
+		return false;
 	}
 }

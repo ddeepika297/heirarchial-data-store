@@ -10,6 +10,8 @@ public interface Event
 	}
 
 	void listen(EventType event);
-	void register(Node observer,EventType event);
-	void unRegister(Node observer,EventType event);
+
+	boolean register(Node observer, EventType event);
+
+	boolean unRegister(Node observer, EventType event);
 }

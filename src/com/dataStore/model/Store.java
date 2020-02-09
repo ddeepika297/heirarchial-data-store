@@ -1,6 +1,8 @@
 package com.dataStore.model;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import com.dataStore.client.DataStoreService;
 import com.dataStore.exception.IllegalPathException;
 import com.dataStore.handler.EventHandler;
@@ -21,23 +23,25 @@ public class Store extends EventHandler implements DataStoreService
 		this.basePath = basePath;
 	}
 
-	// @NotNull(message = "Name may not be null")
 	public boolean createNode(String path, String data) throws IllegalPathException
 	{
 
 		String[] heirarchy = getArrayOfPath(path);
+		path = path.substring(1);
 		int pathLen = heirarchy.length;
 
 		synchronized (this)
 		{
 			Node node = getLastNodeInPath(heirarchy, pathLen - 1);
-			ArrayList<Node> children = attachNewChild(heirarchy[pathLen - 1], node, data);
+			List<Node> children = attachNewChild(heirarchy[pathLen - 1], node, data);
 			node.setChildren(children);
 		}
 		for (Node node : createEventListners)
 		{
 			if (path.startsWith(node.getPath()))
+			{
 				listen(EventType.CREATE);
+			}
 		}
 		return true;
 	}
@@ -45,6 +49,7 @@ public class Store extends EventHandler implements DataStoreService
 	public boolean updateNode(String path, String value) throws IllegalPathException
 	{
 		String[] heirarchy = getArrayOfPath(path);
+		path = path.substring(1);
 		int pathLen = heirarchy.length;
 		synchronized (this)
 		{
@@ -54,7 +59,9 @@ public class Store extends EventHandler implements DataStoreService
 		for (Node node : updateEventListners)
 		{
 			if (path.startsWith(node.getPath()))
+			{
 				listen(EventType.UPDATE);
+			}
 		}
 		return true;
 	}
@@ -62,13 +69,14 @@ public class Store extends EventHandler implements DataStoreService
 	public boolean deleteNode(String path) throws IllegalPathException
 	{
 		String[] heirarchy = getArrayOfPath(path);
+		path = path.substring(1);
 		int pathLen = heirarchy.length;
 
 		synchronized (this)
 		{
 			Boolean ChildFound = false;
 			Node node = getLastNodeInPath(heirarchy, pathLen - 1);
-			ArrayList<Node> children = node.getChildren();
+			List<Node> children = node.getChildren();
 			for (Node child : children)
 			{
 				if (child.getPath().equals(heirarchy[pathLen - 1]))
@@ -79,8 +87,9 @@ public class Store extends EventHandler implements DataStoreService
 				}
 			}
 			if (ChildFound)
+			{
 				node.setChildren(children);
-			else
+			} else
 			{
 				return false;
 			}
@@ -88,7 +97,9 @@ public class Store extends EventHandler implements DataStoreService
 		for (Node node : deleteEventListners)
 		{
 			if (path.startsWith(node.getPath()))
+			{
 				listen(EventType.DELETE);
+			}
 		}
 		return true;
 
@@ -105,7 +116,7 @@ public class Store extends EventHandler implements DataStoreService
 		}
 	}
 
-	public ArrayList<Node> listChildren(String path) throws IllegalPathException
+	public List<Node> listChildren(String path) throws IllegalPathException
 	{
 		String[] heirarchy = getArrayOfPath(path);
 		int pathLen = heirarchy.length;
@@ -152,7 +163,7 @@ public class Store extends EventHandler implements DataStoreService
 			index++;
 			if (pathLen > index)
 			{
-				ArrayList<Node> children = node.getChildren();
+				List<Node> children = node.getChildren();
 				if (children == null)
 				{
 					throw new IllegalPathException();
@@ -179,10 +190,11 @@ public class Store extends EventHandler implements DataStoreService
 		return node;
 	}
 
-	private ArrayList<Node> attachNewChild(String path, Node node, String data)
+	private List<Node> attachNewChild(String path, Node node, String data)
 	{
-
-		ArrayList<Node> children;
+		if (node == null)
+			throw new NullPointerException();
+		List<Node> children;
 		if (node.getChildren() != null)
 		{
 			children = node.getChildren();

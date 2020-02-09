@@ -1,6 +1,7 @@
 package com.dataStore.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Node
 {
@@ -14,7 +15,7 @@ public class Node
 
 	private String path;
 	private String value;
-	private ArrayList<Node> children = null;
+	private List<Node> children = null;
 
 	public String getValue()
 	{
@@ -26,12 +27,12 @@ public class Node
 		this.value = value;
 	}
 
-	public ArrayList<Node> getChildren()
+	public List<Node> getChildren()
 	{
 		return children;
 	}
 
-	public void setChildren(ArrayList<Node> children)
+	public void setChildren(List<Node> children)
 	{
 		this.children = children;
 	}
